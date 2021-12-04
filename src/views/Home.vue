@@ -14,7 +14,6 @@ export default {
     <div class="overlay">
     </div>
     <div class="info">
-      <h1>Iceberg Estate</h1>
       <h1>Hoşgeldiniz</h1>
     </div>
   </div>
@@ -22,7 +21,6 @@ export default {
 
 <style lang="scss" scoped>
 .home {
-  height: 100vh;
   background-image: url('../assets/images/home-estate.jpg');
   background-repeat: no-repeat;
   background-position: center;
@@ -54,6 +52,8 @@ export default {
 
 @media screen and (max-width: 992px) {
   .home {
+    height: calc(100vh - 66px);
+    max-height: -webkit-fill-available;
     .info {
       h1 {
         font-size: 28px;
@@ -64,6 +64,7 @@ export default {
 
 @media screen and (min-width: 992px) {
   .home {
+    height: 100vh;
     .info {
       h1 {
         font-size: 40px;

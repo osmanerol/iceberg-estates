@@ -26,7 +26,22 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@media screen and (max-width: 992px) {
+@media screen and (min-width: 992px) {
+  #app {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    .sidebar-container {
+      height: 100vh;
+      width: 260px;
+    }
+    .page-container {
+      width: calc(100% - 260px);
+    }
+  }
+}
+
+@media screen and (max-width: 991.9px) {
   #app {
     display: flex;
     flex-direction: column;
@@ -40,19 +55,4 @@ export default {
   }
 }
 
-@media screen and (min-width: 992px) {
-  #app {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    .sidebar-container {
-      height: 100vh;
-      width: 250px;
-    }
-    .page-container {
-      flex: 4;
-      width: calc(100% - 250px);
-    }
-  }
-}
 </style>

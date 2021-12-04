@@ -56,7 +56,7 @@ export default {
 
 <style lang="scss" scoped>
 .sidebar {
-  background-color: var(--sidebar-01);
+  background-color: var(--blue-01);
   height: 100%;
   color: var(--white-01);
   #menu-items {
@@ -68,7 +68,7 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        border-radius: 4px; 
+        border-radius: 2px; 
         transition: .4s;
         color: var(--white-01);
         &:hover {
@@ -76,43 +76,10 @@ export default {
         }
       }
       .router-link-exact-active {
-        background: var(--sidebar-02);
-      }
-    }
-  }
-}
-
-@media screen and (max-width: 992px) {
-  .sidebar {
-    .brand {
-      width: 100%;
-      padding: 20px;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      .brand-name {
-        font-size: 22px;
-        margin: 0;
-        span:last-child {
-          margin-left: 6px;
-        }
-      }
-      .menu-icon {
-        font-size: 22px;
-      }
-    }
-    #menu-items {
-      .menu-links {
-        padding: 0 20px 20px 20px;
-        .menu-link {
-          margin-bottom: 6px;
-          padding: 8px 0 6px 0;
-          font-size: 14px;
-          .b-icon {
-            margin-bottom: 4px;
-          }
-        }
+        background: var(--blue-02);
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+        -webkit-box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+        -moz-box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
       }
     }
   }
@@ -144,7 +111,7 @@ export default {
         height: 100%;
         .menu-link {
           font-size: 16px;
-          padding: 10px 0 8px 0;
+          padding: 12px 0 10px 0;
           .b-icon {
             margin-bottom: 8px;
           }
@@ -152,11 +119,46 @@ export default {
             margin-bottom: 12px;  
           }
         }
-        .router-link-exact-active {
-          background: var(--sidebar-02);
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 991.9px) {
+  .sidebar {
+    .brand {
+      width: 100%;
+      height: 66px;
+      padding: 0 20px 0 20px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      .brand-name {
+        font-size: 22px;
+        margin: 0;
+        span:last-child {
+          margin-left: 6px;
+        }
+      }
+      .menu-icon {
+        font-size: 22px;
+      }
+    }
+    #menu-items {
+      .menu-links {
+        padding: 0 20px 20px 20px;
+        .menu-link {
+          margin-bottom: 6px;
+          padding: 8px 0 6px 0;
+          font-size: 14px;
+          .b-icon {
+            margin-bottom: 4px;
+          }
         }
       }
     }
   }
 }
+
 </style>

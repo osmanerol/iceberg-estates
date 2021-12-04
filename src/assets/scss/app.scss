@@ -4,4 +4,31 @@
 body {
   font-family: 'Poppins', sans-serif;
   background-color: var(--ui-01);
+  .layout-container {
+    background-color: var(--white-01);
+    border-radius: 2px;
+  }
+  .shadow {
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    -webkit-box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    -moz-box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  body {
+    .layout-container {
+      margin: 40px 70px;
+      padding: 10px;
+    }
+  }
+}
+
+@media screen and (max-width: 991.9px) {
+  body {
+    .layout-container {
+      margin-top: 30px;
+      padding: 10px;
+    }
+  }
 }
