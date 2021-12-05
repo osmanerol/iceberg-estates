@@ -129,7 +129,7 @@ export default {
     .brand {
       width: 100%;
       height: 66px;
-      padding: 0 20px 0 20px;
+      padding: 0 16px 0 16px;
       display: flex;
       flex-direction: row;
       justify-content: space-between;

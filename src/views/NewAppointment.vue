@@ -15,7 +15,7 @@ export default {
 </script>
 
 <template>
-  <div class="new-appointment">
+  <div class="new-appointment layout">
     <app-title text="Yeni Randevu Oluştur" icon="calendar-plus-fill" />
   </div>
 </template>

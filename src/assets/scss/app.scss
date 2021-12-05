@@ -4,9 +4,12 @@
 body {
   font-family: 'Poppins', sans-serif;
   background-color: var(--ui-01);
-  .layout-container {
+  .sub-layout {
     background-color: var(--white-01);
     border-radius: 2px;
+    table {
+      margin: 0! important;
+    }
   }
   .shadow {
     box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
@@ -17,18 +20,22 @@ body {
 
 @media screen and (min-width: 992px) {
   body {
-    .layout-container {
-      margin: 40px 70px;
-      padding: 10px;
+    .layout {
+      padding: 40px;
+      .sub-layout {
+        padding: 6px;
+      }
     }
   }
 }
 
 @media screen and (max-width: 991.9px) {
   body {
-    .layout-container {
-      margin-top: 30px;
-      padding: 10px;
+    .layout {
+      padding: 20px 16px;
+      .sub-layout {
+        padding: 4px;
+      }
     }
   }
 }

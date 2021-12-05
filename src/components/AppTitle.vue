@@ -17,8 +17,7 @@ export default {
 
 <style lang="scss" scoped>
 .title {
-  background-color: var(--blue-02);
-  color: var(--white-01);
+  color: var(--blue-02);
   display: flex;
   align-items: center;
   h3 {
@@ -27,29 +26,28 @@ export default {
   }
 }
 
-@media screen and (max-width: 992px) {
-  .title {
-    padding: 8px;
-    padding: 20px;
-    .b-icon {
-      font-size: 22px;
-    }
-    h3 {
-      font-size: 18px;
-      margin-left: 10px;
-    }
-  }
-}
-
 @media screen and (min-width: 992px) {
   .title {
-    padding: 40px 70px;
+    margin-bottom: 40px;
     .b-icon {
       font-size: 30px;
     }
     h3 {
       font-size: 24px;
       margin-left: 16px;
+    }
+  }
+}
+
+@media screen and (max-width: 991.9px) {
+  .title {
+    margin-bottom: 20px;
+    .b-icon {
+      font-size: 22px;
+    }
+    h3 {
+      font-size: 18px;
+      margin-left: 10px;
     }
   }
 }

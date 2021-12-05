@@ -1,0 +1,3 @@
+ {
+   "GET_APPOINTMETS": "/Appointments?maxRecords=10"
+ }
