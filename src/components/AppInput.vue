@@ -39,12 +39,14 @@ export default {
       v-model="displayValue"    
       :type="type"
       :placeholder="placeholder"
+      size="sm"
     />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .input {
+  margin-bottom: 6px;
   label {
     margin-bottom: 4px;
     font-size: 13px;

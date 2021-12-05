@@ -10,7 +10,7 @@ export default {
     this.links = [
       { text: 'Anasayfa', icon: 'house-door-fill', path: '/'},
       { text: 'Randevular', icon: 'calendar2-check-fill', path: '/appointments'},
-      { text: 'Yeni Randevu Oluştur', icon: 'calendar-plus-fill', path: '/new-appointment'},
+      { text: 'Yeni Randevu Oluştur', icon: 'calendar-plus-fill', path: '/appointment/create'},
     ]
   },
   methods: {

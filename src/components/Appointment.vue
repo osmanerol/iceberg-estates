@@ -14,7 +14,7 @@ export default {
         })
       }
       else {
-        this.$router.push('/new-appointment')
+        this.$router.push('/appointment/create')
       }
     }
   }
@@ -22,7 +22,10 @@ export default {
 </script>
 
 <template>
-  <div class="appointment" :class="{ disabled : new Date() > new Date(item.fields.appointment_date) }">
+  <div 
+    class="appointment" 
+    :class="{ disabled : new Date() > new Date(item.fields.appointment_date) }"
+  >
     <div class="agent-info">
       <h6>Emlakçı</h6>
       <div class="contact-item"> 
@@ -69,7 +72,7 @@ export default {
 .appointment {
   background-color: var(--white-01);
   border-radius: 2px;
-  padding: 6px;
+  padding: 10px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -127,6 +130,7 @@ export default {
     flex: 1;
     justify-content: flex-end;
     align-items: flex-end;
+    margin-top: 4px;
     .btn {
       background-color: var(--blue-02);
     }

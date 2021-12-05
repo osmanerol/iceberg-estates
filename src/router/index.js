@@ -4,7 +4,7 @@ import VueRouter from 'vue-router'
 // pages
 import Home from '../views/Home.vue'
 import Appointments from '../views/Appointments.vue'
-import NewAppointment from '../views/NewAppointment.vue'
+import CreateAppointment from '../views/CreateAppointment.vue'
 
 Vue.use(VueRouter)
 
@@ -20,9 +20,9 @@ const routes = [
     component: Appointments
   },
   {
-    path: '/new-appointment',
+    path: '/appointment/create',
     name: 'NewAppointment',
-    component: NewAppointment
+    component: CreateAppointment
   },
 ]
 

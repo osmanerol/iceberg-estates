@@ -95,7 +95,7 @@ export default {
   <div class="appointments layout">
     <app-title text="Randevular" icon="calendar2-check-fill" />
     <div class="sub-layout">
-      <b-row class="search">
+      <b-row class="search" v-if="!loading">
         <b-col
           md="4"
           xs="12"
@@ -137,6 +137,7 @@ export default {
     justify-content: space-between;
   }
   .appointment-list { 
+    margin-top: 16px;
     display: grid;
   }
   .loading {
@@ -147,7 +148,7 @@ export default {
     align-items: center;
   }
 }
-@media screen and (min-width: 992px) {
+@media screen and (min-width: 1200px) {
   .appointments {
     .appointment-list {
       grid-template-columns: repeat(3, 1fr);
@@ -156,7 +157,7 @@ export default {
   }
 }
 
-@media screen and (min-width: 768px) and (max-width: 991.9px) {
+@media screen and (min-width: 768px) and (max-width: 1199.9px) {
   .appointments {
     .appointment-list {
       grid-template-columns: repeat(2, 1fr);
