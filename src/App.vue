@@ -32,10 +32,12 @@ export default {
     flex-direction: row;
     justify-content: space-between;
     .sidebar-container {
+      position: fixed;
       height: 100vh;
       width: 260px;
     }
     .page-container {
+      margin-left: 260px;
       width: calc(100% - 260px);
     }
   }

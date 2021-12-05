@@ -14,7 +14,7 @@ export default {
     <div class="overlay">
     </div>
     <div class="info">
-      <h1>Hoşgeldiniz</h1>
+      <h1>Iceberg Estate</h1>
     </div>
   </div>
 </template>

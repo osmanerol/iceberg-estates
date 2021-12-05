@@ -25,6 +25,7 @@ export default {
         <tr 
           v-for="(item, index) in items"
           :key="index"
+          :class="{ gray: new Date() > new Date(item.fields.appointment_date) }"
         >
           <td
             v-for="(field, index) in fields"
@@ -43,14 +44,6 @@ export default {
         </tr>
       </tbody>
     </table>
-    <!--
-    <b-table 
-      hover 
-      small
-      :items="items"
-      :fields="fields"
-    />
-    -->
   </div>
 </template>
 
@@ -63,6 +56,9 @@ export default {
       min-width: 1000px;
       th {
         font-weight: 600;
+      }
+      .gray {
+        background-color: var(--gray-01);
       }
     }
   }

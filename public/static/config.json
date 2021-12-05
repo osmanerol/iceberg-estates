@@ -1,3 +1,4 @@
  {
-   "GET_APPOINTMETS": "/Appointments?maxRecords=10"
+   "GET_APPOINTMETS": "/Appointments",
+   "GET_AGENTS": "/Agents"
  }

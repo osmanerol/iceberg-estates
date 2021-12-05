@@ -1,5 +1,6 @@
-.b-icon {
+.b-icon, .btn, .form-control, .custom-select{
   &:focus {
     outline: none! important;
+    box-shadow: none! important;
   }
 }
