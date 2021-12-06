@@ -4,7 +4,9 @@ import axios from 'axios'
 import AppTitle from '@/components/AppTitle.vue'
 import AppInput from '@/components/AppInput.vue'
 import AppSelect from '@/components/AppSelect.vue'
-import { required, email } from 'vuelidate/lib/validators'
+import { gmapApi } from 'vue2-google-maps'
+import { required, email, minValue } from 'vuelidate/lib/validators'
+import moment from 'moment'
 
 export default {
   name: 'CreateAppointment',
@@ -20,6 +22,7 @@ export default {
   },
   data() {
     return {
+      moment,
       centerPostCode: 'CM27PJ',
       center: { },
       markers: [],
@@ -37,6 +40,7 @@ export default {
         contact_email: null,
       },
       requiredText: 'Bu alan zorunludur',
+      minDateText: 'Randevu tarihi en erken şimdi olabilir',
       emailErrorText: 'E-posta formatına uygun değil',
       loading: false
     }
@@ -44,7 +48,10 @@ export default {
   validations: {
     requestObject: {
       appointment_date: {
-        required
+        required,
+        minValue: value =>{
+          return new Date(value).getTime() > new Date().getTime()
+        }
       },
       appointment_postcode: {
         required
@@ -72,6 +79,7 @@ export default {
     this.getAgents()
   },
   computed: {
+    google: gmapApi,
     destinationInformation() {
       return {
         leaveOfficeTime: new Date(new Date(this.requestObject.appointment_date).getTime() - this.distanceInfo.duration.value * 1000),
@@ -84,6 +92,8 @@ export default {
         return errors
       !this.$v.requestObject.appointment_date.required && 
         errors.push(this.requiredText)
+      !this.$v.requestObject.appointment_date.minValue && 
+        errors.push(this.minDateText)
       return errors 
     },
     appointmentPostCodeErrors() {
@@ -175,24 +185,36 @@ export default {
         this.calculateDistance()
         let axiosInstance = axios.create()
         delete axiosInstance.defaults.headers.common['Authorization']
-        axiosInstance.get(`https://api.postcodes.io/postcodes/lon/${this.destinationCoordinates.lng}/lat/${this.destinationCoordinates.lat}`).then(response => {
-          this.requestObject.appointment_postcode = response.data.result[0].postcode
+        axiosInstance.get(`https://api.postcodes.io/postcodes?lon=${this.destinationCoordinates.lng}&lat=${this.destinationCoordinates.lat}`).then(response => {
+          if(!response.data.result) {
+            this.$bvToast.toast('Sadece İngiltere üzerinden posta kodu hesaplanan alanlarda randevu adresi seçebilirsiniz.', {
+              title: 'Hata',
+              autoHideDelay: 2000,
+              variant: 'danger'
+            })
+            this.requestObject.appointment_postcode = null
+          }
+          else {
+            this.requestObject.appointment_postcode = response.data.result[0].postcode
+          }
         })
       }
     },
     async calculateDistance() {
-      const origin = new window.google.maps.LatLng(this.center.lat, this.center.lng)
-      const destination = new window.google.maps.LatLng(this.destinationCoordinates.lat, this.destinationCoordinates.lng)
-      const service = new window.google.maps.DistanceMatrixService()
-      service.getDistanceMatrix({
-        origins: [origin],
-        destinations: [destination],
-        travelMode: 'DRIVING',
-        unitSystem: google.maps.UnitSystem.METRIC,
-        avoidHighways: false,
-        avoidTolls: false,
-      }).then(response => {
-        this.distanceInfo = response.rows[0].elements[0]
+      this.$gmapApiPromiseLazy().then(() => {
+        const origin = new this.google.maps.LatLng(this.center.lat, this.center.lng)
+        const destination = new this.google.maps.LatLng(this.destinationCoordinates.lat, this.destinationCoordinates.lng)
+        const service = new this.google.maps.DistanceMatrixService()
+        service.getDistanceMatrix({
+          origins: [origin],
+          destinations: [destination],
+          travelMode: 'DRIVING',
+          unitSystem: google.maps.UnitSystem.METRIC,
+          avoidHighways: false,
+          avoidTolls: false,
+        }).then(response => {
+          this.distanceInfo = response.rows[0].elements[0]
+        })
       })
     },
     async save() {
@@ -267,6 +289,7 @@ export default {
             text="Tarih"
             v-model="requestObject.appointment_date"
             type="datetime-local"
+            :min="moment().format('YYYY-MM-DDTHH:MM')"
           />
           <p
             v-if="appointmentDateErrors.length"

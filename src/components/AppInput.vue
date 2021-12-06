@@ -21,6 +21,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    min: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -45,6 +49,7 @@ export default {
       :placeholder="placeholder"
       size="sm"
       :disabled="disabled"
+      :min="min"
     />
   </div>
 </template>

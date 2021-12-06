@@ -5,7 +5,9 @@ import AppTitle from '@/components/AppTitle.vue'
 import AppInput from '@/components/AppInput.vue'
 import AppSelect from '@/components/AppSelect.vue'
 import AppLoading from '@/components/AppLoading.vue'
-import { required, email } from 'vuelidate/lib/validators'
+import { gmapApi } from 'vue2-google-maps'
+import { required, email, minValue } from 'vuelidate/lib/validators'
+import moment from 'moment'
 
 export default {
   name: 'CreateAppointment',
@@ -22,7 +24,8 @@ export default {
   },
   data() {
     return {
-      id:null,
+      moment,
+      id: null,
       centerPostCode: 'CM27PJ',
       center: { },
       markers: [],
@@ -41,6 +44,7 @@ export default {
         contact_id: null
       },
       requiredText: 'Bu alan zorunludur',
+      minDateText: 'Randevu tarihi en erken şimdi olabilir',
       emailErrorText: 'E-posta formatına uygun değil',
       loading: false,
       submitLoading: false,
@@ -50,7 +54,10 @@ export default {
   validations: {
     requestObject: {
       appointment_date: {
-        required
+        required,
+        minValue: value =>{
+          return new Date(value).getTime() > new Date().getTime()
+        }
       },
       appointment_postcode: {
         required
@@ -73,14 +80,15 @@ export default {
       },
     }
   },
-  mounted() {
+  async created() {
     this.getAgents()
     this.id = this.$route.params.id
     if(this.id) {
-      this.getAppointment()
+      await this.getAppointment()
     }
   },
   computed: {
+    google: gmapApi,
     destinationInformation() {
       return {
         leaveOfficeTime: new Date(new Date(this.requestObject.appointment_date).getTime() - this.distanceInfo.duration.value * 1000),
@@ -93,6 +101,8 @@ export default {
         return errors
       !this.$v.requestObject.appointment_date.required && 
         errors.push(this.requiredText)
+      !this.$v.requestObject.appointment_date.minValue && 
+        errors.push(this.minDateText)
       return errors 
     },
     appointmentPostCodeErrors() {
@@ -214,19 +224,21 @@ export default {
         })
       }
     },
-    async calculateDistance() {
-      const origin = new window.google.maps.LatLng(this.center.lat, this.center.lng)
-      const destination = new window.google.maps.LatLng(this.destinationCoordinates.lat, this.destinationCoordinates.lng)
-      const service = new window.google.maps.DistanceMatrixService()
-      service.getDistanceMatrix({
-        origins: [origin],
-        destinations: [destination],
-        travelMode: 'DRIVING',
-        unitSystem: google.maps.UnitSystem.METRIC,
-        avoidHighways: false,
-        avoidTolls: false,
-      }).then(response => {
-        this.distanceInfo = response.rows[0].elements[0]
+    calculateDistance() {
+      this.$gmapApiPromiseLazy().then(() => {
+        const origin = new this.google.maps.LatLng(this.center.lat, this.center.lng)
+        const destination = new this.google.maps.LatLng(this.destinationCoordinates.lat, this.destinationCoordinates.lng)
+        const service = new this.google.maps.DistanceMatrixService()
+        service.getDistanceMatrix({
+          origins: [origin],
+          destinations: [destination],
+          travelMode: 'DRIVING',
+          unitSystem: google.maps.UnitSystem.METRIC,
+          avoidHighways: false,
+          avoidTolls: false,
+        }).then(response => {
+          this.distanceInfo = response.rows[0].elements[0]
+        })
       })
     },
     async save() {
@@ -319,6 +331,7 @@ export default {
                 text="Tarih"
                 v-model="requestObject.appointment_date"
                 type="datetime-local"
+                :min="moment().format('YYYY-MM-DDTHH:MM')"
               />
               <p
                 v-if="appointmentDateErrors.length"
