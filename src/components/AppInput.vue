@@ -17,6 +17,10 @@ export default {
     placeholder: {
       type: String,
       default: ''
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -40,6 +44,7 @@ export default {
       :type="type"
       :placeholder="placeholder"
       size="sm"
+      :disabled="disabled"
     />
   </div>
 </template>

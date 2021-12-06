@@ -1,4 +1,5 @@
  {
-   "GET_APPOINTMETS": "/Appointments",
-   "GET_AGENTS": "/Agents"
+   "APPOINTMETS": "/Appointments",
+   "AGENTS": "/Agents",
+   "CONTACT": "/Contacts"
  }

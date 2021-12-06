@@ -3,7 +3,7 @@ import Vue from "vue"
 export const getAppointments = (offset) => {
   return Vue.axios({
     method: 'GET',
-    url: Vue.prototype.$URL.GET_APPOINTMETS
+    url: Vue.prototype.$URL.APPOINTMETS
   }).then(response => {
     return response.data
   })
@@ -12,7 +12,27 @@ export const getAppointments = (offset) => {
 export const getAgents = () => {
   return Vue.axios({
     method: 'GET',
-    url: Vue.prototype.$URL.GET_AGENTS
+    url: Vue.prototype.$URL.AGENTS
+  }).then(response => {
+    return response.data
+  })
+}
+
+export const saveContact = (data) => {
+  return Vue.axios({
+    method: 'POST',
+    url: Vue.prototype.$URL.CONTACT,
+    data
+  }).then(response => {
+    return response.data
+  })
+}
+
+export const saveAppointment = (data) => {
+  return Vue.axios({
+    method: 'POST',
+    url: Vue.prototype.$URL.APPOINTMETS,
+    data
   }).then(response => {
     return response.data
   })

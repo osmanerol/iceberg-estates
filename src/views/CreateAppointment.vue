@@ -1,5 +1,6 @@
 <script>
 import * as service from '@/service/service.js'
+import axios from 'axios'
 import AppTitle from '@/components/AppTitle.vue'
 import AppInput from '@/components/AppInput.vue'
 import AppSelect from '@/components/AppSelect.vue'
@@ -19,11 +20,16 @@ export default {
   },
   data() {
     return {
+      centerPostCode: 'CM27PJ',
+      center: { },
+      markers: [],
+      distanceInfo: null,
+      destinationCoordinates: {},
+      agentTimeInfo: {},
       agentList: [],
       requestObject: {
         appointment_date: null,
-        appointment_time: null,
-        appointment_post_code: null,
+        appointment_postcode: null,
         agent_id: null,
         contact_name: null,
         contact_surname: null,
@@ -31,7 +37,8 @@ export default {
         contact_email: null,
       },
       requiredText: 'Bu alan zorunludur',
-      emailErrorText: 'E-posta formatına uygun değil'
+      emailErrorText: 'E-posta formatına uygun değil',
+      loading: false
     }
   },
   validations: {
@@ -39,10 +46,7 @@ export default {
       appointment_date: {
         required
       },
-      appointment_time: {
-        required
-      },
-      appointment_post_code: {
+      appointment_postcode: {
         required
       },
       agent_id: {
@@ -64,61 +68,60 @@ export default {
     }
   },
   created() {
+    this.getCenterCoordinate()
     this.getAgents()
   },
   computed: {
+    destinationInformation() {
+      return {
+        leaveOfficeTime: new Date(new Date(this.requestObject.appointment_date).getTime() - this.distanceInfo.duration.value * 1000),
+        arriveOfficeTime: new Date(new Date(this.requestObject.appointment_date).getTime() + 60 * 60000 + this.distanceInfo.duration.value * 1000)
+      }
+    },
     appointmentDateErrors() {
-      let errors = [];
+      let errors = []
       if (!this.$v.requestObject.appointment_date.$dirty) 
-        return errors;
+        return errors
       !this.$v.requestObject.appointment_date.required && 
         errors.push(this.requiredText)
       return errors 
     },
-    appointmentTimeErrors() {
-      let errors = [];
-      if (!this.$v.requestObject.appointment_time.$dirty) 
-        return errors;
-      !this.$v.requestObject.appointment_time.required && 
-        errors.push(this.requiredText)
-      return errors 
-    },
     appointmentPostCodeErrors() {
-      let errors = [];
-      if (!this.$v.requestObject.appointment_post_code.$dirty) 
-        return errors;
-      !this.$v.requestObject.appointment_post_code.required && 
+      let errors = []
+      if (!this.$v.requestObject.appointment_postcode.$dirty) 
+        return errors
+      !this.$v.requestObject.appointment_postcode.required && 
         errors.push(this.requiredText)
       return errors 
     },
     agentIdErrors() {
-      let errors = [];
+      let errors = []
       if (!this.$v.requestObject.agent_id.$dirty) 
-        return errors;
+        return errors
       !this.$v.requestObject.agent_id.required && 
         errors.push(this.requiredText)
       return errors 
     },
     contactNameErrors() {
-      let errors = [];
+      let errors = []
       if (!this.$v.requestObject.contact_name.$dirty) 
-        return errors;
+        return errors
       !this.$v.requestObject.contact_name.required && 
         errors.push(this.requiredText)
       return errors 
     },
     contactSurnameErrors() {
-      let errors = [];
+      let errors = []
       if (!this.$v.requestObject.contact_surname.$dirty) 
-        return errors;
+        return errors
       !this.$v.requestObject.contact_surname.required && 
         errors.push(this.requiredText)
       return errors 
     },
     contactEmailErrors() {
-      let errors = [];
+      let errors = []
       if (!this.$v.requestObject.contact_email.$dirty) 
-        return errors;
+        return errors
       !this.$v.requestObject.contact_email.required && 
         errors.push(this.requiredText)
       !this.$v.requestObject.contact_email.email && 
@@ -126,15 +129,28 @@ export default {
       return errors 
     },
     contactPhoneErrors() {
-      let errors = [];
+      let errors = []
       if (!this.$v.requestObject.contact_phone.$dirty) 
-        return errors;
+        return errors
       !this.$v.requestObject.contact_phone.required && 
         errors.push(this.requiredText)
       return errors 
     }
   },
   methods: {
+    getCenterCoordinate() {
+      let axiosInstance = axios.create()
+      delete axiosInstance.defaults.headers.common['Authorization']
+      axiosInstance.get(`https://api.postcodes.io/postcodes/${this.centerPostCode}`).then(response => {
+        this.center = {
+          lat: response.data.result.latitude,
+          lng: response.data.result.longitude
+        }
+        this.markers = [{
+          position: this.center
+        }]
+      })
+    },
     async getAgents() {
       await service.getAgents().then(response => {
         this.agentList = response.records.map(item => {
@@ -150,10 +166,73 @@ export default {
         })
       })
     },
+    setLocation(location) {
+      if(location) {
+        this.destinationCoordinates = {
+          lat: location.latLng.lat(),
+          lng: location.latLng.lng()
+        }
+        this.calculateDistance()
+        let axiosInstance = axios.create()
+        delete axiosInstance.defaults.headers.common['Authorization']
+        axiosInstance.get(`https://api.postcodes.io/postcodes/lon/${this.destinationCoordinates.lng}/lat/${this.destinationCoordinates.lat}`).then(response => {
+          this.requestObject.appointment_postcode = response.data.result[0].postcode
+        })
+      }
+    },
+    async calculateDistance() {
+      const origin = new window.google.maps.LatLng(this.center.lat, this.center.lng)
+      const destination = new window.google.maps.LatLng(this.destinationCoordinates.lat, this.destinationCoordinates.lng)
+      const service = new window.google.maps.DistanceMatrixService()
+      service.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: 'DRIVING',
+        unitSystem: google.maps.UnitSystem.METRIC,
+        avoidHighways: false,
+        avoidTolls: false,
+      }).then(response => {
+        this.distanceInfo = response.rows[0].elements[0]
+      })
+    },
     async save() {
-      this.$v.$touch();
-      if(!this.$v.invalid) {
-
+      this.$v.$touch()
+      if(!this.$v.$invalid) {
+        this.loading = true
+        const contactObject = {
+          contact_name: this.requestObject.contact_name,
+          contact_surname: this.requestObject.contact_surname,
+          contact_email: this.requestObject.contact_email,
+          contact_phone: this.requestObject.contact_phone
+        }
+        await service.saveContact({
+          fields: contactObject
+        }).then(async response => {
+          const appointmentObject = {
+            appointment_date: this.requestObject.appointment_date,
+            appointment_postcode: this.requestObject.appointment_postcode,
+            contact_id: [
+              response.id
+            ],
+            agent_id: [
+              this.requestObject.agent_id
+            ]
+          }
+          await service.saveAppointment({
+            fields: appointmentObject
+          }).then(response => {
+            if(response.id) {
+              this.$bvToast.toast('Randevu başarıyla kaydedilmiştir.', {
+                title: 'Başarılı',
+                autoHideDelay: 2000,
+                variant: 'success'
+              })
+              setTimeout(() => {
+                this.$router.push('/appointments')
+              }, 2000)
+            }
+          })
+        })
       }
     }
   }
@@ -187,7 +266,7 @@ export default {
           <app-input
             text="Tarih"
             v-model="requestObject.appointment_date"
-            type="date"
+            type="datetime-local"
           />
           <p
             v-if="appointmentDateErrors.length"
@@ -198,23 +277,9 @@ export default {
         </b-col>
         <b-col lg="4" sm="6" xs="12">
           <app-input
-            text="Saat"
-            v-model="requestObject.appointment_time"
-            type="time"
-          />
-          <p
-            v-if="appointmentTimeErrors.length"
-            class="error"
-          >
-            {{ appointmentTimeErrors[0] }}
-          </p>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col lg="4" sm="6" xs="12">
-          <app-input
             text="Posta Kodu"
-            v-model="requestObject.appointment_post_code"
+            v-model="requestObject.appointment_postcode"
+            :disabled="true"
           />
           <p
             v-if="appointmentPostCodeErrors.length"
@@ -222,6 +287,55 @@ export default {
           >
             {{ appointmentPostCodeErrors[0] }}
           </p>
+        </b-col>
+      </b-row>
+      <small>İmleci randevu adresi üzerine getiriniz.</small>
+      <GmapMap
+        v-if="Object.keys(center).length > 0"
+        :center="center"
+        :zoom="14"
+        map-type-id="terrain"
+        style="width:100%; height: 400px;"
+      >
+        <GmapMarker
+          :position="center"
+          :draggable="true"
+          @dragend="setLocation"
+        />
+      </GmapMap>
+      <b-row 
+        v-if="distanceInfo"
+        class="distance-info-container"
+      >
+        <b-col 
+          class="distance-info"
+          md="6" 
+          xs="12"
+        >
+          <div class="distance-item">
+            <span>Ofise Uzaklık : </span>
+            <span>{{ distanceInfo.distance.text }}</span>
+          </div>
+          <div class="distance-item">
+            <span>Ofisten Süre (Araba) : </span>
+            <span>{{ distanceInfo.duration.text }}</span>
+          </div>
+          <div class="distance-item">
+            <span>Randevu Süresi : </span>
+            <span>1 saat</span>
+          </div>
+          <template v-if="requestObject.appointment_date">
+            <div>
+              <div class="distance-item">
+                <span>Tahmini Ofisten Çıkış : </span>
+                <span>{{ new Date(destinationInformation.leaveOfficeTime).toLocaleString() }}</span>
+              </div>
+              <div class="distance-item">
+                <span>Emlakçının Sıradaki Müsaitliği : </span>
+                <span>{{ new Date(destinationInformation.arriveOfficeTime).toLocaleString() }}</span>
+              </div>
+            </div>
+          </template>
         </b-col>
       </b-row>
       <hr> 
@@ -283,7 +397,8 @@ export default {
       <b-btn
         size="sm"
         @click="save"
-        class="mt-3"
+        class="submit-button mt-3"
+        :disabled="loading"
       >
         Kaydet
       </b-btn>
@@ -293,6 +408,23 @@ export default {
 
 <style lang="scss" scoped>
 .create-appointment {
+  .distance-info-container {
+    margin: 10px 0;
+    .distance-info {
+      background-color: var(--white-01);
+      border-radius: 2px;
+      padding: 10px;
+      font-size: 14px;
+      .distance-item {
+        span:first-child {
+          font-weight: 500;
+        }
+        &:not(:last-child) {
+          margin-bottom: 4px;
+        }
+      }
+    }
+  }
   h5 {
     font-size: 18px;
   }
@@ -303,6 +435,9 @@ export default {
   }
   hr {
     margin: 10px 0 16px 0;
+  }
+  .submit-button {
+    background-color: var(--blue-01);
   }
 }
 </style>

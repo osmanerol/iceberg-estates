@@ -9,10 +9,17 @@ import VueMeta from 'vue-meta'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import Vuelidate from 'vuelidate'
+import * as VueGoogleMaps from 'vue2-google-maps'
 
 Vue.use(Vuelidate)
 Vue.use(VueAxios, axios)
 Vue.use(VueMeta)
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: process.env.VUE_APP_MAP_API_KEY,
+    libraries: 'places',
+  }
+});
 Vue.config.productionTip = false
 
 import './assets/css/color.css'
@@ -30,6 +37,7 @@ axios({
   }
   Vue.prototype.$URL = urls;
   axios.defaults.headers.common['Authorization'] = `Bearer ${apiKey}`
+  axios.defaults.headers.common['Content-Type'] = 'application/json'
 
   new Vue({
     router,
