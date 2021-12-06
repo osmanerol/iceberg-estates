@@ -5,7 +5,7 @@ import AppTitle from '@/components/AppTitle.vue'
 import AppInput from '@/components/AppInput.vue'
 import AppSelect from '@/components/AppSelect.vue'
 import { gmapApi } from 'vue2-google-maps'
-import { required, email, minValue } from 'vuelidate/lib/validators'
+import { required, email } from 'vuelidate/lib/validators'
 import moment from 'moment'
 
 export default {
@@ -40,7 +40,7 @@ export default {
         contact_email: null,
       },
       requiredText: 'Bu alan zorunludur',
-      minDateText: 'Randevu tarihi en erken şimdi olabilir',
+      minDateText: 'Geçmiş tarihli randevu oluşturulamaz',
       emailErrorText: 'E-posta formatına uygun değil',
       loading: false
     }
@@ -351,11 +351,11 @@ export default {
             <div>
               <div class="distance-item">
                 <span>Tahmini Ofisten Çıkış : </span>
-                <span>{{ new Date(destinationInformation.leaveOfficeTime).toLocaleString() }}</span>
+                <span>{{ new Date(destinationInformation.leaveOfficeTime).toLocaleString().substring(0, 16) }}</span>
               </div>
               <div class="distance-item">
                 <span>Emlakçının Sıradaki Müsaitliği : </span>
-                <span>{{ new Date(destinationInformation.arriveOfficeTime).toLocaleString() }}</span>
+                <span>{{ new Date(destinationInformation.arriveOfficeTime).toLocaleString().substring(0, 16) }}</span>
               </div>
             </div>
           </template>

@@ -44,11 +44,12 @@ export default {
         contact_id: null
       },
       requiredText: 'Bu alan zorunludur',
-      minDateText: 'Randevu tarihi en erken şimdi olabilir',
+      minDateText: 'Geçmiş tarihli randevu oluşturulamaz',
       emailErrorText: 'E-posta formatına uygun değil',
       loading: false,
       submitLoading: false,
-      showError: false
+      showError: false,
+      errorText: null
     }
   },
   validations: {
@@ -81,6 +82,7 @@ export default {
     }
   },
   async created() {
+    this.$v.$touch()
     this.getAgents()
     this.id = this.$route.params.id
     if(this.id) {
@@ -170,13 +172,20 @@ export default {
           contact_phone: response.fields.contact_phone[0],
           contact_email: response.fields.contact_email[0]
         }
-        this.center = await this.getCoordinate(this.centerPostCode)
-        this.destinationCoordinates = await this.getCoordinate(response.fields.appointment_postcode)
-        this.markers = [{
-          position: this.destinationCoordinates
-        }]
+        if(new Date() >= new Date(response.fields.appointment_date.replace('Z',''))) {
+          this.showError = true
+          this.errorText = 'Geçmiş tarihli kayıt güncellenemez'
+        }
+        else {
+          this.center = await this.getCoordinate(this.centerPostCode)
+          this.destinationCoordinates = await this.getCoordinate(response.fields.appointment_postcode)
+          this.markers = [{
+            position: this.destinationCoordinates
+          }]
+        }
       }).catch(error => {
         this.showError = true
+        this.errorText = 'Kayıt bulunamadı'
       })
       if(!this.showError) {
         this.calculateDistance()
@@ -302,7 +311,7 @@ export default {
       <app-loading v-if="loading" />
       <div class="not-found" v-if="!loading && showError">
         <img src="@/assets/images/404.svg" alt="not-found">
-        <h3>Kayıt bulunamadı.</h3>
+        <h3>{{ errorText }}</h3>
         <router-link to="/appointments">Randevulara Dön</router-link>
       </div>
       <template v-if="!loading && !showError">
@@ -393,11 +402,11 @@ export default {
                 <div>
                   <div class="distance-item">
                     <span>Tahmini Ofisten Çıkış : </span>
-                    <span>{{ new Date(destinationInformation.leaveOfficeTime).toLocaleString() }}</span>
+                    <span>{{ new Date(destinationInformation.leaveOfficeTime).toLocaleString().substring(0, 16) }}</span>
                   </div>
                   <div class="distance-item">
                     <span>Emlakçının Sıradaki Müsaitliği : </span>
-                    <span>{{ new Date(destinationInformation.arriveOfficeTime).toLocaleString() }}</span>
+                    <span>{{ new Date(destinationInformation.arriveOfficeTime).toLocaleString().substring(0, 16) }}</span>
                   </div>
                 </div>
               </template>

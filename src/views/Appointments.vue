@@ -40,8 +40,8 @@ export default {
       dateOrder: null,
       dateOrderList: [
         { value: null, text: '-- Seçiniz --' },
-        { value: 1, text: 'Tarihe Göre Artan' },
-        { value: 2, text: 'Tarihe Göre Azalan' }
+        { value: 1, text: 'Tarihe Göre (Önce Eski)' },
+        { value: 2, text: 'Tarihe Göre (Önce Yeni)' }
       ]
     }
   },
@@ -69,7 +69,7 @@ export default {
   methods: {
     async getAppointments() {
       this.loading = true
-      await service.getAppointments(this.offset).then(response => {
+      await service.getAppointments().then(response => {
         // some data does not have all fields, just show not blank data
         this.list = response.records.filter(item => item.fields.agent_id)
       })

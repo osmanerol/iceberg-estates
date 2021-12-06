@@ -1,9 +1,16 @@
 <script>
+import moment from 'moment'
+
 export default {
   name: 'Appointment',
   props: [
     'item'
   ],
+  data() {
+    return {
+      moment
+    }
+  },
   methods: {
     update() {
       if(new Date() > new Date(this.item.fields.appointment_date)) {
@@ -29,7 +36,7 @@ export default {
 <template>
   <div 
     class="appointment" 
-    :class="{ disabled : new Date() > new Date(item.fields.appointment_date) }"
+    :class="{ disabled : new Date() >= new Date(item.fields.appointment_date.replace('Z','')) }"
   >
     <div class="agent-info">
       <h6>Emlakçı</h6>
@@ -57,7 +64,7 @@ export default {
       <h6>Randevu</h6>
       <div class="contact-item"> 
         <span class="sub-title">Tarih : </span>
-        <span class="sub-text">{{ new Date(item.fields.appointment_date).toLocaleString() }}</span>
+        <span class="sub-text">{{ new Date(item.fields.appointment_date.replace('Z','')).toLocaleString().substring(0, 16) }}</span>
       </div>
       <div class="contact-item"> 
         <span class="sub-title">Posta Kodu : </span>
@@ -73,6 +80,11 @@ export default {
 <style lang="scss" scoped>
 .disabled {
   background-color: rgba(0, 0, 0, .08)! important;
+  .update {
+    .btn {
+      background-color: var(--gray-02)! important;
+    }
+  }
 }
 .appointment {
   background-color: var(--white-01);
@@ -99,6 +111,12 @@ export default {
     border-bottom: 1px solid var(--gray-01);
     span {
       font-size: 15px;
+    }
+    .contact-item {
+      .sub-title {
+        font-weight: 500;
+        margin-right: 4px;
+      }
     }
   }
   .contact-info {
