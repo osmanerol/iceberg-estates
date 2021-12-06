@@ -5,6 +5,8 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Appointments from '../views/Appointments.vue'
 import CreateAppointment from '../views/CreateAppointment.vue'
+import UpdateAppointment from '../views/UpdateAppointment.vue'
+import NotFound from '../views/NotFound.vue'
 
 Vue.use(VueRouter)
 
@@ -21,14 +23,23 @@ const routes = [
   },
   {
     path: '/appointment/create',
-    name: 'NewAppointment',
+    name: 'CreateAppointment',
     component: CreateAppointment
+  },
+  {
+    path: '/appointment/update/:id',
+    name: 'UpdateAppointment',
+    component: UpdateAppointment
+  },
+  {
+    path: '*',
+    name: 'NotFound',
+    component: NotFound
   },
 ]
 
 const router = new VueRouter({
   mode: 'history',
-  base: process.env.BASE_URL,
   routes
 })
 

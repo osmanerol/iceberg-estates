@@ -5,6 +5,7 @@ import AppTitle from '@/components/AppTitle.vue'
 import Appointment from '@/components/Appointment.vue'
 import AppInput from '@/components/AppInput.vue'
 import AppSelect from '@/components/AppSelect.vue'
+import AppLoading from '@/components/AppLoading.vue'
 
 export default {
   name: 'Appointments',
@@ -17,7 +18,8 @@ export default {
     AppTitle,
     Appointment,
     AppInput,
-    AppSelect
+    AppSelect,
+    AppLoading
   },
   data() {
     return {
@@ -124,9 +126,7 @@ export default {
           :item="item"
         />
       </div>
-      <div v-else class="loading">
-        <b-spinner type="grow" label="Spinning"></b-spinner>
-      </div>
+      <app-loading v-else />
     </div>
   </div>
 </template>

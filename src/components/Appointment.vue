@@ -14,7 +14,12 @@ export default {
         })
       }
       else {
-        this.$router.push('/appointment/create')
+        this.$router.push({
+          name: 'UpdateAppointment',
+          params: {
+            id: this.item.id
+          }
+        })
       }
     }
   }
