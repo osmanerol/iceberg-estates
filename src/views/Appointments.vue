@@ -23,16 +23,6 @@ export default {
   },
   data() {
     return {
-      fields: [
-        { name: 'agent_name', text: 'Emlakçı Adı' },
-        { name: 'agent_surname', text: 'Emlakçı Soyadı' },
-        { name: 'appointment_postcode', text: 'Rezervasyon Posta Kodu' },
-        { name: 'contact_name', text: 'Müşteri Adı' },
-        { name: 'contact_surname', text: 'Müşteri Soyadı' },
-        { name: 'contact_phone', text: 'Müşteri Telefonu' },
-        { name: 'contact_email', text: 'Müşteri E-posta' },
-        { name: 'update', text: 'Güncelle' },
-      ],
       list: [],
       loading: false,
       agent: null,
